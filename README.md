@@ -5,22 +5,51 @@
 
 ---
 
-## 1. Problem
-Across campus facility services, construction sites, and manufacturing sectors, millions of outsourced and contractual workers experience systemic vulnerabilities:
-- **Unlogged Overtime & Wage Mismatch**: Worked hours differ from muster roll payments without clear recourse.
-- **Unaddressed Worksite Hazards**: Safety hazards reported to supervisors linger unresolved, causing acute injuries.
-- **Fear of Retaliation**: Individual workers hesitate to report supervisor misconduct, arbitrary wage deductions, or safety breaches due to fear of termination.
-- **Lack of Verified Proof**: Displaced or contract laborers lack tamper-evident proof of service or statutory entitlements.
+## 1. Chosen Vertical
+**UN SDG 8: Decent Work and Economic Growth**  
+- **Target 8.8**: Protect labour rights and promote safe and secure working environments for all workers, including migrant workers and those in precarious employment.
+- **Target 8.5**: Achieve full and productive employment and decent work for all women and men, including equal pay for work of equal value.
+- **Multi-Sector Config**: Rather than single-site hardcoded logic, the solution dynamically adapts via config files (`src/config/sectors.ts`) across 3 high-impact sectors:
+  1. *SRMIST Campus Facility & Hostel Staff* (Janitorial, catering, housekeeping)
+  2. *Metro Rail Construction* (Civil laborers, welders, rebar crews)
+  3. *District General Hospital* (Sanitation, ward support, biomedical waste handlers)
 
 ---
 
-## 2. What We Built
-**FairShift Hisaab** is an enterprise-grade workplace fairness and compliance ecosystem anchored in the **"Two-Key Rule"**:
-*No pay mismatch, hazard, or complaint is marked resolved unless the worker confirms it OR independent proof exists.*
+## 2. Approach and Logic
+FairShift Hisaab replaces unverifiable paper logs and one-sided employer discretion with mathematical and game-theoretic transparency:
+- **The "Two-Key Rule"**: No pay gap, overtime discrepancy, or safety hazard ticket can ever be marked "Resolved" by a supervisor or contractor alone. It requires **Key 1** (Independent timestamped proof / after-photo) AND **Key 2** (Worker confirmation or peer consensus).
+- **Collective Escrow ($K=3$)**: Solves the retaliation dilemma. Sensitive complaints (such as supervisor bribery, withheld wages, or harassment) are held in an encrypted escrow vault. The alert is only released to top-level site administrators once 3 or more distinct workers file corroborated reports against the same entity, eliminating individual exposure.
+- **Consensus Overtime Detection**: When 3 or more workers tap "Still Working" within a 20-minute window outside their scheduled shift, the system programmatically flags consensus overtime on the muster roll, making unlogged overtime impossible to hide.
+- **Environmental & Fatigue Intelligence**: Pure TypeScript algorithmic engines calculate NOAA Heat Index (triggering mandatory work-rest cycles) and fatigue flags (rest interval < 10h or ≥ 6 consecutive working days).
+- **Tamper-Evident SHA-256 Ledger**: Every shift check-in generates a verifiable hash linked to the previous shift receipt, creating a cryptographically verifiable audit trail.
 
-The platform delivers two distinct, configuration-driven interfaces:
-1. **Worker Companion**: A mobile-first Progressive Web App (PWA) with 5 accessible tabs (Home, Money, Safety, Speak Up, Rights), 72px check-in actions, Money Jar wage visualization, and complete local language audio readout.
-2. **Employer Command Cockpit**: A desktop-first administrative cockpit with UN SDG 8 impact telemetry, statutory SLA clock monitors, consensus overtime detection, thekedar scorecards, and one-tap inspection pack downloads.
+---
+
+## 3. How the Solution Works
+The system provides two synchronized, responsive interfaces connected via an offline-resilient data layer:
+
+1. **Worker Companion (`/app`) — Mobile-First PWA**:
+   - **Low-Literacy UI**: Built around an interactive visual **SVG Money Jar** (showing earned, pending, and withheld wages with no financial jargon), 72px giant touch targets, and full Web Speech API voice read-aloud in 6 languages.
+   - **Check-in & Coarse Location**: Fast 1-tap shift start with coarse location verification (no invasive battery-draining continuous GPS tracking).
+   - **Safety Reporting**: 3-tap hazard reporting with in-browser EXIF metadata stripping and camera downscaling for slow 2G/3G connections.
+   - **Speak Up Vault**: Confidential reporting through Collective Escrow with urgent safety bypass.
+   - **Know Your Rights**: Scenario-based cards with statutory wage laws and instant formal dispute letter generation.
+
+2. **Employer Command Cockpit (`/admin`) & Contractor Muster (`/contractor`) — Desktop-First**:
+   - **SDG 8 Fairness Index**: Real-time statutory compliance telemetry score across pay parity, safety resolution times, and fatigue levels.
+   - **Pay Gap Resolution Queue**: Direct interface for thekedars and management to issue corrections and settlements directly to worker ledger receipts.
+   - **Safety Escalation Clock**: 4-hour supervisor triage, 24-hour site safety officer SLA, and automatic 72-hour regulatory dossier escalation.
+   - **One-Tap Statutory Export**: Generates inspection-ready CSV muster rolls and Form D registers for labor inspections.
+
+---
+
+## 4. Assumptions Made
+1. **Device Access & Connectivity**: Workers may possess budget smartphones on 2G/3G connections or use shared worksite kiosks. The PWA is designed offline-first (<1 MB bundle, Service Worker caching, IndexedDB local queue, and background synchronization).
+2. **Coarse vs. Invasive Geolocation**: Precise background GPS tracking violates worker privacy and drains battery. The system relies on site-level coarse coordinates verified against designated geo-zones.
+3. **Escrow Threshold ($K=3$)**: $K=3$ provides statistical confidence against frivolous reports while maintaining sufficient anonymity for small crews (10–20 workers).
+4. **AI Role is Strictly Advisory**: Multimodal AI (Gemini Vision and Voice Transcription) is used exclusively for unstructured data translation, transcription, and muster roll visual comparison. All money calculations, overtime rules, and closure authorizations are 100% deterministic pure TypeScript logic with zero AI hallucination risk.
+5. **Multi-Language Parity**: Text strings must be 100% localized with zero hardcoded English; font weights and line heights are adjusted specifically per Indic script to ensure legibility.
 
 ---
 
