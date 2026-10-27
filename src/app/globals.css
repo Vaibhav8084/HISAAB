@@ -1,0 +1,161 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Default Obsidian Glass theme */
+  --color-black: #0A0B0A;
+  --color-obsidian: #101310;
+  --color-grey-900: #1A1D1B;
+  --color-grey-700: #2E332F;
+  --color-grey-500: #6B726C;
+  --color-grey-300: #B8BEB9;
+  --color-text: #F2F5F1;
+  --color-lime: #A3E635;
+  --color-lime-deep: #4D7C0F;
+  --color-danger: #FF5A4F;
+  --color-warn: #FBBF24;
+  --bg-page: #0A0B0A;
+  --card-bg: rgba(255, 255, 255, 0.06);
+  --card-border: rgba(255, 255, 255, 0.12);
+  --card-blur: 18px;
+  --card-radius: 20px;
+  --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  --btn-text-color: #0A0B0A;
+}
+
+[data-theme="droplets"] {
+  --color-black: #070F07;
+  --color-obsidian: #0D1A0E;
+  --color-grey-900: #142416;
+  --color-grey-700: #243D27;
+  --color-grey-500: #6B806E;
+  --color-grey-300: #B6C7B8;
+  --color-text: #F2F5F1;
+  --color-lime: #A3E635;
+  --color-lime-deep: #4D7C0F;
+  --color-danger: #FF5A4F;
+  --color-warn: #FBBF24;
+  --bg-page: #070F07;
+  --card-bg: rgba(163, 230, 53, 0.05);
+  --card-border: rgba(163, 230, 53, 0.18);
+  --card-blur: 18px;
+  --card-radius: 20px;
+  --card-shadow: 0 8px 32px 0 rgba(7, 25, 7, 0.45);
+  --btn-text-color: #0A0B0A;
+}
+
+[data-theme="sketch"] {
+  --color-black: #111827;
+  --color-obsidian: #FFFFFF;
+  --color-grey-900: #F3F4F6;
+  --color-grey-700: #1F2937;
+  --color-grey-500: #4B5563;
+  --color-grey-300: #9CA3AF;
+  --color-text: #111827;
+  --color-lime: #A3E635;
+  --color-lime-deep: #4D7C0F;
+  --color-danger: #DC2626;
+  --color-warn: #D97706;
+  --bg-page: #FAFAFA;
+  --card-bg: #FFFFFF;
+  --card-border: #111827;
+  --card-blur: 0px;
+  --card-radius: 6px;
+  --card-shadow: 3px 3px 0px 0px #111827;
+  --btn-text-color: #0A0B0A;
+}
+
+[data-theme="concrete"] {
+  --color-black: #0F172A;
+  --color-obsidian: #F1F5F9;
+  --color-grey-900: #E2E8F0;
+  --color-grey-700: #334155;
+  --color-grey-500: #64748B;
+  --color-grey-300: #94A3B8;
+  --color-text: #0F172A;
+  --color-lime: #4D7C0F;
+  --color-lime-deep: #365314;
+  --color-danger: #B91C1C;
+  --color-warn: #B45309;
+  --bg-page: #E5E7EB;
+  --card-bg: #F8FAFC;
+  --card-border: #CBD5E1;
+  --card-blur: 0px;
+  --card-radius: 12px;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --btn-text-color: #FFFFFF;
+}
+
+body {
+  background-color: var(--bg-page);
+  color: var(--color-text);
+  min-height: 100vh;
+  font-feature-settings: "tnum";
+}
+
+/* Glass card styling */
+.glass-card {
+  background: var(--card-bg);
+  backdrop-filter: blur(var(--card-blur));
+  -webkit-backdrop-filter: blur(var(--card-blur));
+  border: 1px solid var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Droplets theme static water highlight pseudo-element */
+[data-theme="droplets"] .glass-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: 
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.35) 1.5px, rgba(163, 230, 53, 0.12) 3.5px, transparent 5px),
+    radial-gradient(circle at 74% 15%, rgba(255, 255, 255, 0.3) 1px, rgba(163, 230, 53, 0.1) 2.5px, transparent 4px),
+    radial-gradient(circle at 35% 80%, rgba(255, 255, 255, 0.35) 2px, rgba(163, 230, 53, 0.15) 4px, transparent 6px),
+    radial-gradient(circle at 85% 65%, rgba(255, 255, 255, 0.25) 1.5px, rgba(163, 230, 53, 0.1) 3px, transparent 4.5px),
+    radial-gradient(circle at 55% 40%, rgba(255, 255, 255, 0.2) 1px, transparent 3px),
+    radial-gradient(circle at 92% 30%, rgba(255, 255, 255, 0.3) 1.5px, transparent 3.5px),
+    radial-gradient(circle at 10% 70%, rgba(255, 255, 255, 0.25) 1px, transparent 3px);
+  opacity: 0.85;
+}
+
+/* Sketch theme hand-drawn borders & wobble */
+[data-theme="sketch"] .glass-card {
+  border: 2px solid var(--color-black);
+  filter: url(#hand-drawn-wobble);
+}
+
+/* Typography and Script Safeguards */
+:lang(hi),
+:lang(bn),
+:lang(ta),
+:lang(pa),
+:lang(ur) {
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-style: normal !important;
+}
+
+:lang(ur) {
+  line-height: 2.1 !important;
+  font-size: max(18px, 1em) !important;
+  direction: rtl;
+}
+
+/* Money tabular numbers */
+.money-tabular {
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+  font-size: 44px;
+  line-height: 1.1;
+}
+
+/* Accessible focus ring */
+*:focus-visible {
+  outline: 3px solid var(--color-lime);
+  outline-offset: 3px;
+}
