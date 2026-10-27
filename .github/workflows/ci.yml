@@ -1,0 +1,40 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    name: Code Quality, Security, Tests & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: TypeScript Type Check
+        run: npm run typecheck
+
+      - name: ESLint Verification
+        run: npm run lint
+
+      - name: Unit & Accessibility Tests (Vitest)
+        run: npm run test
+
+      - name: Repository Size Budget (< 2 MB)
+        run: npm run check:repo-size
+
+      - name: Next.js Production Build
+        run: npm run build
