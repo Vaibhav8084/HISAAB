@@ -52,9 +52,13 @@ export default function WelcomePage() {
     <main id="main-content" className="flex-1 flex flex-col justify-between max-w-xl mx-auto w-full p-4 sm:p-6 space-y-8">
       {/* Top Bar with Language and Theme */}
       <header className="flex items-center justify-between gap-2 pt-2">
-        <div className="flex items-center gap-2">
-          <Scale className="w-7 h-7 text-lime" aria-hidden="true" />
-          <span className="font-extrabold text-xl tracking-tight text-text">FairShift</span>
+        <div className="flex items-center gap-2.5">
+          <img
+            src="/images/hisaab-logo.jpg"
+            alt="Hisaab Logo"
+            className="w-8 h-8 rounded-xl object-contain bg-white p-0.5 border border-lime/40 shadow-sm"
+          />
+          <span className="font-extrabold text-xl tracking-tight text-text">FairShift Hisaab</span>
         </div>
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
@@ -62,14 +66,26 @@ export default function WelcomePage() {
         </div>
       </header>
 
-      {/* Hero Welcome */}
-      <div className="text-center space-y-3 pt-2">
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-text tracking-tight leading-tight">
-          {t('welcome.title')}
-        </h1>
-        <p className="text-lg text-grey-300 max-w-md mx-auto leading-relaxed">
-          {t('welcome.subtitle')}
-        </p>
+      {/* Hero Welcome with Official Hisaab Logo */}
+      <div className="text-center space-y-4 pt-2">
+        <div className="flex justify-center">
+          <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-3xl overflow-hidden border-2 border-lime/50 shadow-2xl bg-white p-1 hover:scale-105 transition-transform duration-300">
+            <img
+              src="/images/hisaab-logo.jpg"
+              alt="Hisaab Logo - Two-Key Fairness for UN SDG 8"
+              className="w-full h-full object-contain rounded-2xl"
+            />
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-text tracking-tight leading-tight">
+            FairShift Hisaab
+          </h1>
+          <p className="text-lg text-grey-300 max-w-md mx-auto leading-relaxed">
+            {t('welcome.subtitle')}
+          </p>
+        </div>
         <div className="pt-2 flex items-center justify-center gap-3">
           <ReadAloudButton />
           <button
@@ -301,6 +317,19 @@ export default function WelcomePage() {
           </a>
         </div>
       </Modal>
+
+      {/* Database & Security Trust Badge */}
+      <div className="p-3 rounded-2xl bg-obsidian/80 border border-grey-800 text-xs flex flex-wrap items-center justify-between gap-2">
+        <div className="flex items-center gap-2">
+          <span className="w-2 h-2 rounded-full bg-lime animate-pulse" />
+          <span className="text-grey-300 font-mono text-[11px]">
+            MongoDB Atlas Database: <strong className="text-lime">fairshift_hisaab</strong>
+          </span>
+        </div>
+        <span className="text-grey-500 text-[11px] font-mono">
+          Account: vaibhavnr06@gmail.com &bull; Encrypted &bull; SCRAM-SHA-256
+        </span>
+      </div>
 
       {/* Bottom Footer & Showcase Link */}
       <footer className="pt-4 border-t border-grey-900/60 flex flex-col sm:flex-row items-center justify-between text-xs text-grey-500 gap-3">

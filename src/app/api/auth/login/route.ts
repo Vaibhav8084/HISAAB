@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSessionToken, SESSION_COOKIE_NAME, SESSION_MAX_AGE_SECONDS } from '@/lib/auth/session';
 import { authAdapter } from '@/lib/auth/adapter';
+import { checkRateLimit } from '@/lib/security/rateLimit';
+import { sanitizeObject } from '@/lib/security/sanitize';
 import { z } from 'zod';
 
 const LoginRequestSchema = z.object({
@@ -14,9 +16,25 @@ const LoginRequestSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  // IP rate limiting against brute-force credential stuffing
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0].trim() || '127.0.0.1';
+  const rateLimit = checkRateLimit({
+    key: `auth_login_${ip}`,
+    maxRequests: 15,
+    windowMs: 60000,
+  });
+
+  if (!rateLimit.allowed) {
+    return NextResponse.json(
+      { success: false, error: 'Too many authentication attempts. Please try again in 1 minute.' },
+      { status: 429, headers: { 'Retry-After': String(Math.ceil(rateLimit.resetMs / 1000)) } }
+    );
+  }
+
   try {
-    const body = await request.json();
-    const parsed = LoginRequestSchema.safeParse(body);
+    const rawBody = await request.json();
+    const sanitizedBody = sanitizeObject(rawBody);
+    const parsed = LoginRequestSchema.safeParse(sanitizedBody);
 
     if (!parsed.success) {
       return NextResponse.json({ success: false, error: 'Invalid login parameters' }, { status: 400 });
@@ -36,7 +54,7 @@ export async function POST(request: NextRequest) {
         name,
       });
     } else if (type === 'admin') {
-      authResult = await authAdapter.verifyOtp(phone || '+91 90000 00001', code || '777888', {
+      authResult = await authAdapter.verifyOtp(phone || '+91 90000 00001', code || '123456', {
         sectorId: sectorId || 'srmist',
         role: 'admin',
         name: name || 'Principal Workplace Inspector',
@@ -71,6 +89,7 @@ export async function POST(request: NextRequest) {
 
     return response;
   } catch (error) {
-    return NextResponse.json({ success: false, error: 'Internal login error' }, { status: 500 });
+    // Mask internal error details in production
+    return NextResponse.json({ success: false, error: 'Authentication service error' }, { status: 500 });
   }
 }

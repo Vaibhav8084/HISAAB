@@ -141,11 +141,20 @@ function AuthMethodContent() {
         <div className="w-8 h-2.5 rounded-full bg-lime" />
       </div>
 
-      {/* Title */}
-      <div className="text-start space-y-1">
-        <span className="text-xs font-bold uppercase tracking-wider text-grey-500">Step 3 of 3</span>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-text">{t('login.choose_auth')}</h1>
-        <p className="text-base text-grey-300">Choose how you want to verify your identity.</p>
+      {/* Title with Hisaab Logo */}
+      <div className="flex items-center gap-4">
+        <div className="w-14 h-14 rounded-2xl overflow-hidden border-2 border-lime/50 bg-white p-0.5 shrink-0 shadow-md">
+          <img
+            src="/images/hisaab-logo.jpg"
+            alt="Hisaab Logo"
+            className="w-full h-full object-contain rounded-xl"
+          />
+        </div>
+        <div className="text-start space-y-0.5">
+          <span className="text-xs font-bold uppercase tracking-wider text-grey-500">Step 3 of 3</span>
+          <h1 className="text-2xl font-extrabold text-text">{t('login.choose_auth')}</h1>
+          <p className="text-sm text-grey-300">Choose how you want to verify your identity.</p>
+        </div>
       </div>
 
       {/* Auth Method Tiles (Ordered strictly as specified in Prompt 4) */}

@@ -251,17 +251,24 @@ export default function ContractorPortalPage() {
     <main id="main-content" className="max-w-5xl mx-auto p-4 sm:p-6 space-y-8">
       {/* Top Header */}
       <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-4 border-b border-grey-700">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Link href="/" className="inline-flex items-center gap-1.5 text-xs font-bold text-grey-500 hover:text-lime">
-              <ArrowLeft className="w-3.5 h-3.5" />
-              <span>Back to home</span>
-            </Link>
+        <div className="flex items-center gap-3.5">
+          <img
+            src="/images/hisaab-logo.jpg"
+            alt="Hisaab Logo"
+            className="w-12 h-12 rounded-xl object-contain bg-white p-0.5 border border-lime/50 shadow shrink-0"
+          />
+          <div>
+            <div className="flex items-center gap-2 mb-0.5">
+              <Link href="/" className="inline-flex items-center gap-1.5 text-xs font-bold text-grey-500 hover:text-lime">
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Back to home</span>
+              </Link>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-text">{t('contractor.title')}</h1>
+            <p className="text-xs text-grey-300">
+              Balaji Facility & Allied Contractors &bull; MongoDB Synced (vaibhavnr06@gmail.com)
+            </p>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-text">{t('contractor.title')}</h1>
-          <p className="text-sm text-grey-300">
-            Balaji Facility & Allied Contractors &bull; Authorized Labour Operations
-          </p>
         </div>
 
         <div className="flex flex-wrap gap-2">

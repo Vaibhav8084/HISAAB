@@ -195,6 +195,11 @@ export default function WorkerAppLayout({ children }: { children: React.ReactNod
         </button>
 
         <div className="flex items-center gap-1.5">
+          <img
+            src="/images/hisaab-logo.jpg"
+            alt="Hisaab"
+            className="w-8 h-8 rounded-lg object-contain bg-white p-0.5 border border-lime/40 shadow-sm"
+          />
           <ReadAloudButton className="p-2" />
           <button
             onClick={() => setIsSettingsOpen(true)}

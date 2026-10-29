@@ -69,8 +69,8 @@ export const metadata: Metadata = {
     'Two-Key fairness for UN SDG 8: mobile-first worker shift companion and employer command cockpit.',
   manifest: '/manifest.webmanifest',
   icons: {
-    icon: '/icons/favicon.ico',
-    apple: '/icons/icon-192.png',
+    icon: '/images/hisaab-logo.jpg',
+    apple: '/images/hisaab-logo.jpg',
   },
 };
 
@@ -117,6 +117,8 @@ export default function RootLayout({
           <I18nProvider>
             <ToastProvider>
               <SkyLayer />
+              <div className="bg-mirror-morph" aria-hidden="true" />
+              <div className="bg-mirror-overlay" aria-hidden="true" />
               <div className="relative z-10 flex flex-col min-h-screen">
                 {children}
               </div>

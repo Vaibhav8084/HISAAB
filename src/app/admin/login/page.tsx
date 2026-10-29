@@ -70,8 +70,12 @@ export default function AdminLoginPage() {
       {/* Admin Login Card */}
       <div className="glass-card p-6 sm:p-8 space-y-6 border-2 border-grey-700 shadow-2xl">
         <div className="text-center space-y-2">
-          <div className="w-16 h-16 rounded-2xl bg-grey-900 border border-grey-700 flex items-center justify-center mx-auto text-lime shadow-inner">
-            <ShieldCheck className="w-9 h-9" />
+          <div className="w-16 h-16 rounded-2xl overflow-hidden border-2 border-lime/60 bg-white p-0.5 mx-auto shadow-xl">
+            <img
+              src="/images/hisaab-logo.jpg"
+              alt="Hisaab Logo"
+              className="w-full h-full object-contain rounded-xl"
+            />
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-text">
             {t('welcome.admin_dashboard')}

@@ -384,9 +384,13 @@ export default function AdminCommandCockpitPage() {
       <aside className="w-full md:w-64 bg-obsidian border-b md:border-b-0 md:border-r border-grey-800 p-4 flex flex-col justify-between shrink-0">
         <div className="space-y-6">
           <div className="flex items-center gap-2.5 px-2">
-            <Scale className="w-7 h-7 text-lime" />
+            <img
+              src="/images/hisaab-logo.jpg"
+              alt="Hisaab Logo"
+              className="w-8 h-8 rounded-xl object-contain bg-white p-0.5 border border-lime/50 shadow"
+            />
             <div>
-              <span className="font-extrabold text-lg text-text block leading-none">FairShift</span>
+              <span className="font-extrabold text-lg text-text block leading-none">FairShift Hisaab</span>
               <span className="text-[10px] font-bold text-grey-500 uppercase tracking-widest">
                 Command Cockpit
               </span>
@@ -437,12 +441,18 @@ export default function AdminCommandCockpitPage() {
           </nav>
         </div>
 
-        <div className="pt-4 border-t border-grey-800 flex items-center justify-between text-xs">
-          <Link href="/" className="flex items-center gap-1.5 text-grey-500 hover:text-danger font-bold">
-            <LogOut className="w-4 h-4" />
-            <span>Sign out</span>
-          </Link>
-          <span className="text-[10px] text-grey-600">UN SDG 8</span>
+        <div className="pt-4 border-t border-grey-800 flex flex-col gap-2 text-xs">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-1.5 text-grey-500 hover:text-danger font-bold">
+              <LogOut className="w-4 h-4" />
+              <span>Sign out</span>
+            </Link>
+            <span className="text-[10px] text-grey-600">UN SDG 8</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-[10px] text-grey-400 font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-lime animate-pulse shrink-0" />
+            <span className="truncate">MongoDB: vaibhavnr06@gmail.com</span>
+          </div>
         </div>
       </aside>
 
