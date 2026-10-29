@@ -8,6 +8,8 @@ import { Modal } from '@/components/ui/Modal';
 import { Chip } from '@/components/ui/Chip';
 import { RIGHTS_SCENARIOS, RightScenario, LEGAL_DISCLAIMER, LAST_REVIEWED_DATE } from '@/config/rights';
 import { HELPLINES, HelplineItem } from '@/config/helplines';
+import { downloadLegalNoticePdf } from '@/lib/pdf/generateLegalNoticePdf';
+import { useToast } from '@/components/ui/Toast';
 import {
   PhoneCall,
   ShieldCheck,
@@ -21,6 +23,7 @@ import {
   UserX,
   Footprints,
   AlertTriangle,
+  Download,
 } from 'lucide-react';
 
 const SCENARIO_ICONS: Record<string, React.ReactNode> = {
@@ -34,12 +37,34 @@ const SCENARIO_ICONS: Record<string, React.ReactNode> = {
 
 export default function WorkerRightsPage() {
   const { t, lang } = useI18n();
+  const { showToast } = useToast();
   const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
   const [selectedScenario, setSelectedScenario] = useState<RightScenario | null>(null);
   const [isLetterModalOpen, setIsLetterModalOpen] = useState(false);
 
   const handlePrintLetter = () => {
     window.print();
+  };
+
+  const handleDownloadPdf = () => {
+    if (!selectedScenario) return;
+    downloadLegalNoticePdf({
+      workerName: 'Sunita Devi',
+      workerId: 'worker-sunita',
+      workerPhone: '+91 99999 99999',
+      workerBloodGroup: 'O+',
+      sectorName: 'SRMIST Campus Facilities',
+      siteName: 'Hostel Block A & B (Sanitation Wing)',
+      scenarioTitle: t(selectedScenario.titleKey),
+      lawReference: `${selectedScenario.defaultTitle} (Code on Wages 2019 / OSH Code 2020)`,
+      subject: selectedScenario.letterTemplate.subject,
+      bodyIntro: selectedScenario.letterTemplate.bodyIntro,
+      bodyDemand: selectedScenario.letterTemplate.bodyDemand,
+      date: new Date().toLocaleDateString('en-IN', { year: 'numeric', month: 'long', day: 'numeric' }),
+      ledgerHash: 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855',
+      outstandingRupees: 720,
+    });
+    showToast('Official legal notice PDF generated & downloaded.', 'success');
   };
 
   return (
@@ -262,13 +287,25 @@ export default function WorkerRightsPage() {
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <Button variant="ghost" onClick={() => setIsLetterModalOpen(false)} className="flex-1">
-                Close
+            <div className="flex flex-col sm:flex-row gap-2 pt-2">
+              <Button
+                variant="primary"
+                onClick={handleDownloadPdf}
+                className="flex-1 flex items-center justify-center gap-2 bg-lime text-black font-extrabold shadow-lg"
+              >
+                <Download className="w-4 h-4" />
+                <span>Download Official PDF</span>
               </Button>
-              <Button variant="primary" onClick={handlePrintLetter} className="flex-1 flex items-center justify-center gap-2">
+              <Button
+                variant="secondary"
+                onClick={handlePrintLetter}
+                className="flex-1 flex items-center justify-center gap-2"
+              >
                 <Printer className="w-4 h-4" />
                 <span>Print one-page letter</span>
+              </Button>
+              <Button variant="ghost" onClick={() => setIsLetterModalOpen(false)} className="sm:w-auto">
+                Close
               </Button>
             </div>
           </div>

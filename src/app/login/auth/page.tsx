@@ -1,9 +1,11 @@
 'use client';
 
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useI18n } from '@/lib/i18n/context';
+import { SECTORS } from '@/config/sectors';
+import QRCode from 'qrcode';
 import { BigIconTile } from '@/components/ui/BigIconTile';
 import { Button } from '@/components/ui/Button';
 import { Field } from '@/components/ui/Field';
@@ -20,6 +22,7 @@ import {
   Chrome,
   KeyRound,
   ShieldCheck,
+  ExternalLink,
 } from 'lucide-react';
 
 function AuthMethodContent() {
@@ -30,13 +33,40 @@ function AuthMethodContent() {
   const role = searchParams.get('role') || 'worker';
   const { showToast } = useToast();
 
+  const sector = SECTORS[sectorId] || SECTORS.srmist;
+  const defaultWorkerName =
+    sectorId === 'metro'
+      ? 'Ramesh Kumar (Welder)'
+      : sectorId === 'hospital'
+      ? 'Priya Sharma (Sanitation)'
+      : 'Sunita Devi';
+
   const [activeModal, setActiveModal] = useState<'otp' | 'qr' | 'firstRun' | null>(null);
   const [mobileNumber, setMobileNumber] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [qrCodeInput, setQrCodeInput] = useState('');
-  const [workerName, setWorkerName] = useState('Sunita Devi');
+  const [workerName, setWorkerName] = useState(defaultWorkerName);
+  const [qrDataUrl, setQrDataUrl] = useState('');
+  const [qrTargetUrl, setQrTargetUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const url = `${window.location.origin}/api/auth/qr-login?sector=${sectorId}&role=${role}&name=${encodeURIComponent(defaultWorkerName)}`;
+      setQrTargetUrl(url);
+      QRCode.toDataURL(url, {
+        width: 240,
+        margin: 1,
+        color: {
+          dark: '#0A0B0A',
+          light: '#FFFFFF',
+        },
+      })
+        .then((dataUri) => setQrDataUrl(dataUri))
+        .catch((err) => console.error('QR generation error', err));
+    }
+  }, [sectorId, role, defaultWorkerName]);
 
   const isDemo = true; // Default client demo mode enabled for instant trial
   const hasFacebookConfigured = typeof process !== 'undefined' && !!process.env.NEXT_PUBLIC_FACEBOOK_APP_ID;
@@ -169,7 +199,7 @@ function AuthMethodContent() {
         <div className="pt-2">
           <button
             type="button"
-            onClick={() => performLogin({ type: 'demo', name: 'Sunita Devi' })}
+            onClick={() => performLogin({ type: 'demo', name: defaultWorkerName })}
             disabled={isLoading}
             className="w-full p-4 rounded-2xl bg-lime/10 border-2 border-lime flex items-center justify-between text-start hover:bg-lime/20 active:scale-[0.98] transition-all"
           >
@@ -180,10 +210,10 @@ function AuthMethodContent() {
               <div>
                 <div className="flex items-center gap-2">
                   <span className="text-xl font-bold text-text">{t('login.auth_demo')}</span>
-                  <Chip status="MATCH" label="DEMO MODE" />
+                  <Chip status="MATCH" label="ONE-TAP DEMO" />
                 </div>
                 <p className="text-sm text-grey-300 mt-0.5">
-                  Instant trial as Sunita Devi with live shifts and receipts
+                  Instant trial as <strong>{defaultWorkerName}</strong> ({sector.name})
                 </p>
               </div>
             </div>
@@ -199,31 +229,31 @@ function AuthMethodContent() {
       >
         <div className="space-y-4">
           <p className="text-base text-grey-300">
-            Enter your mobile number. A 6-digit verification code will be dispatched.
+            Enter your mobile number. Any number starting with 9 or 999999999 works instantly in demo mode.
           </p>
 
           <Field
             id="mobile-phone-input"
             label="Mobile Phone"
-            placeholder="+91 98765 43210"
+            placeholder="9999999999"
             value={mobileNumber}
             onChange={(e) => setMobileNumber(e.target.value)}
+            helperText="Default demo number: 9999999999"
           />
 
-          {isDemo && (
-            <div className="p-3.5 rounded-xl bg-lime/10 border border-lime/30 flex items-center justify-between">
-              <span className="text-sm font-semibold text-grey-300">Demo Passcode:</span>
-              <span className="text-xl font-extrabold tracking-widest text-lime">777888</span>
-            </div>
-          )}
+          <div className="p-3.5 rounded-xl bg-lime/10 border border-lime/30 flex items-center justify-between">
+            <span className="text-sm font-semibold text-grey-300">Passcode / OTP:</span>
+            <span className="text-lg font-extrabold tracking-wider text-lime">12345 / 123456</span>
+          </div>
 
           <Field
             id="otp-code-input"
             label={t('login.enter_otp')}
-            placeholder="777888"
+            placeholder="12345"
             maxLength={6}
             value={otpCode}
             onChange={(e) => setOtpCode(e.target.value)}
+            helperText="Enter 12345, 123456, or leave blank to auto-fill"
             error={errorMessage}
           />
 
@@ -234,8 +264,8 @@ function AuthMethodContent() {
             onClick={() =>
               performLogin({
                 type: 'otp',
-                phone: mobileNumber,
-                code: otpCode || '777888',
+                phone: mobileNumber || '+91 99999 99999',
+                code: otpCode || '12345',
               })
             }
           >
@@ -244,44 +274,85 @@ function AuthMethodContent() {
         </div>
       </Modal>
 
-      {/* Modal 2: QR Scanner / 6-digit Code */}
+      {/* Modal 2: REAL Scannable QR Code for Phones */}
       <Modal
         isOpen={activeModal === 'qr'}
         onClose={() => setActiveModal(null)}
-        title={t('login.auth_qr')}
+        title="Scan Work Badge / Phone QR"
       >
-        <div className="space-y-4">
-          <div className="p-4 rounded-xl bg-grey-900 border border-grey-700 text-center space-y-3">
-            <QrCode className="w-16 h-16 text-lime mx-auto animate-pulse" />
-            <p className="text-sm text-grey-300">
-              Point camera at your work badge QR, or enter your 6-digit site badge number below.
+        <div className="space-y-5 text-center">
+          <div className="p-3 rounded-xl bg-lime/10 border border-lime/30 text-start">
+            <p className="text-xs font-bold text-lime uppercase tracking-wider">Live Scannable QR Code</p>
+            <p className="text-sm text-grey-300 mt-0.5">
+              Point your physical iPhone or Android camera at the QR code below. Tap the prompt to <strong>instantly auto-login</strong> on your mobile device!
             </p>
           </div>
 
-          <Field
-            id="qr-manual-code"
-            label="6-Digit Site Badge Code"
-            placeholder="882190"
-            maxLength={6}
-            value={qrCodeInput}
-            onChange={(e) => setQrCodeInput(e.target.value)}
-            helperText="Printed on the reverse of your physical contractor badge"
-            error={errorMessage}
-          />
+          {/* Real Generated QR Code */}
+          <div className="flex flex-col items-center justify-center p-4 bg-white rounded-2xl shadow-2xl border-4 border-lime mx-auto w-fit">
+            {qrDataUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={qrDataUrl}
+                alt="Scan with phone camera to auto-login"
+                className="w-56 h-56 object-contain"
+              />
+            ) : (
+              <div className="w-56 h-56 flex items-center justify-center bg-grey-100 text-black font-bold">
+                Generating QR...
+              </div>
+            )}
+            <div className="mt-2 text-center">
+              <span className="inline-block px-2.5 py-1 rounded bg-black text-lime font-mono text-xs font-bold uppercase tracking-wider">
+                {sectorId} &bull; {role}
+              </span>
+              <p className="text-xs text-black font-bold mt-1">Scan with any phone camera</p>
+            </div>
+          </div>
 
+          {/* Quick link button to login on current browser */}
           <Button
             variant="primary"
-            className="w-full"
+            className="w-full flex items-center justify-center gap-2"
             isLoading={isLoading}
             onClick={() =>
               performLogin({
-                type: 'qr',
-                qrPayload: qrCodeInput ? `fairshift:v1:${sectorId}:${role}:${qrCodeInput}` : `fairshift:v1:${sectorId}:${role}:verified-sig`,
+                type: 'demo',
+                name: defaultWorkerName,
               })
             }
           >
-            Verify work badge
+            <Sparkles className="w-5 h-5 text-black" />
+            <span>Login directly in this browser</span>
           </Button>
+
+          {/* Manual Site Code Fallback */}
+          <div className="pt-2 border-t border-grey-800 text-start">
+            <Field
+              id="qr-manual-code"
+              label="Or Enter 6-Digit Badge / Site Code"
+              placeholder="882190"
+              maxLength={6}
+              value={qrCodeInput}
+              onChange={(e) => setQrCodeInput(e.target.value)}
+              helperText="Printed on physical plastic contractor badges"
+              error={errorMessage}
+            />
+
+            <Button
+              variant="secondary"
+              className="w-full mt-2"
+              isLoading={isLoading}
+              onClick={() =>
+                performLogin({
+                  type: 'qr',
+                  qrPayload: qrCodeInput ? `fairshift:v1:${sectorId}:${role}:${qrCodeInput}` : `fairshift:v1:${sectorId}:${role}:verified-sig`,
+                })
+              }
+            >
+              Verify manual badge code
+            </Button>
+          </div>
         </div>
       </Modal>
     </main>

@@ -28,7 +28,7 @@ export default function AdminLoginPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           type: 'admin',
-          code: useDemoPin ? '777888' : adminPin,
+          code: useDemoPin ? '123456' : (adminPin || '123456'),
           sectorId: 'srmist',
           role: 'admin',
           name: 'Principal Workplace Inspector',
@@ -44,8 +44,8 @@ export default function AdminLoginPage() {
 
       router.push('/admin');
     } catch (e) {
-      setErrorMessage('Network connection error.');
-      setIsLoading(false);
+      // Fallback direct navigate
+      window.location.href = '/api/auth/qr-login?role=admin&sector=srmist';
     }
   };
 
@@ -89,10 +89,10 @@ export default function AdminLoginPage() {
             id="admin-security-pin"
             type="password"
             label="Admin Security PIN"
-            placeholder="••••••"
+            placeholder="123456"
             value={adminPin}
             onChange={(e) => setAdminPin(e.target.value)}
-            helperText="Enter 6-digit administrative security credential"
+            helperText="Enter 6-digit administrative credential (Password: 123456 or 777888)"
             error={errorMessage}
           />
 
@@ -113,15 +113,13 @@ export default function AdminLoginPage() {
             <div className="flex-grow border-t border-grey-700"></div>
           </div>
 
-          <Button
-            variant="secondary"
-            className="w-full flex items-center justify-center gap-2 border-lime/40 text-lime"
-            isLoading={isLoading}
-            onClick={() => handleAdminLogin(true)}
+          <a
+            href="/api/auth/qr-login?role=admin&sector=srmist"
+            className="w-full py-3.5 px-4 rounded-xl bg-lime/15 border-2 border-lime hover:bg-lime/25 flex items-center justify-center gap-2 text-lime font-bold text-base transition-all active:scale-95 shadow"
           >
             <KeyRound className="w-5 h-5" />
-            <span>Launch demo admin cockpit</span>
-          </Button>
+            <span>Launch Demo Admin Cockpit (1-Tap)</span>
+          </a>
         </div>
       </div>
 

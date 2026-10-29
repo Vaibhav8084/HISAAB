@@ -106,21 +106,38 @@ body {
   overflow: hidden;
 }
 
-/* Droplets theme static water highlight pseudo-element */
+/* Realistic 3D Liquid Water Droplets Effect */
 [data-theme="droplets"] .glass-card::before {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background-image: 
-    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, 0.35) 1.5px, rgba(163, 230, 53, 0.12) 3.5px, transparent 5px),
-    radial-gradient(circle at 74% 15%, rgba(255, 255, 255, 0.3) 1px, rgba(163, 230, 53, 0.1) 2.5px, transparent 4px),
-    radial-gradient(circle at 35% 80%, rgba(255, 255, 255, 0.35) 2px, rgba(163, 230, 53, 0.15) 4px, transparent 6px),
-    radial-gradient(circle at 85% 65%, rgba(255, 255, 255, 0.25) 1.5px, rgba(163, 230, 53, 0.1) 3px, transparent 4.5px),
-    radial-gradient(circle at 55% 40%, rgba(255, 255, 255, 0.2) 1px, transparent 3px),
-    radial-gradient(circle at 92% 30%, rgba(255, 255, 255, 0.3) 1.5px, transparent 3.5px),
-    radial-gradient(circle at 10% 70%, rgba(255, 255, 255, 0.25) 1px, transparent 3px);
-  opacity: 0.85;
+  background-image:
+    /* Large 3D droplet 1 (top right) */
+    radial-gradient(circle at 76% 18%, rgba(255, 255, 255, 0.95) 1.5px, transparent 3px),
+    radial-gradient(ellipse at 78% 20%, rgba(163, 230, 53, 0.25) 0%, rgba(255, 255, 255, 0.15) 35%, rgba(0, 0, 0, 0.5) 75%, transparent 85%),
+    
+    /* Large 3D droplet 2 (bottom left) */
+    radial-gradient(circle at 21% 79%, rgba(255, 255, 255, 0.95) 2px, transparent 4px),
+    radial-gradient(ellipse at 23% 81%, rgba(163, 230, 53, 0.28) 0%, rgba(255, 255, 255, 0.18) 40%, rgba(0, 0, 0, 0.55) 75%, transparent 85%),
+    
+    /* Medium droplet 3 (mid right) */
+    radial-gradient(circle at 89% 62%, rgba(255, 255, 255, 0.9) 1px, transparent 2.5px),
+    radial-gradient(circle at 90% 63%, rgba(163, 230, 53, 0.22) 0%, rgba(0, 0, 0, 0.45) 65%, transparent 80%),
+    
+    /* Medium droplet 4 (top left) */
+    radial-gradient(circle at 14% 28%, rgba(255, 255, 255, 0.9) 1.5px, transparent 3px),
+    radial-gradient(circle at 15% 30%, rgba(163, 230, 53, 0.22) 0%, rgba(0, 0, 0, 0.5) 65%, transparent 80%),
+    
+    /* Micro condensation droplets cluster */
+    radial-gradient(circle at 45% 15%, rgba(255, 255, 255, 0.8) 1px, transparent 2px),
+    radial-gradient(circle at 62% 48%, rgba(255, 255, 255, 0.75) 1px, transparent 2.5px),
+    radial-gradient(circle at 35% 42%, rgba(255, 255, 255, 0.8) 1.2px, transparent 2.5px),
+    radial-gradient(circle at 70% 85%, rgba(255, 255, 255, 0.8) 1px, transparent 2px),
+    radial-gradient(circle at 8% 88%, rgba(255, 255, 255, 0.7) 1px, transparent 2px);
+  background-size: 100% 100%;
+  opacity: 0.95;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
 }
 
 /* Sketch theme hand-drawn borders & wobble */

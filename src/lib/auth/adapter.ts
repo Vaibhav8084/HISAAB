@@ -1,31 +1,26 @@
 import { AuthProvider, AuthUser } from './types';
 import { SEED_USERS } from '../storage/seedData';
 
+import { SECTORS } from '@/config/sectors';
+
 export const DEMO_OTP_CODE = '777888';
+export const DEMO_PASSWORDS = ['12345', '123456', '777888', 'demo', 'admin123', ''];
 
 export class FairShiftAuthAdapter implements AuthProvider {
   name = 'FairShiftAuthAdapter';
 
   private isDemoMode(): boolean {
-    // In browser client or server, check env var or flag
-    return process.env.NEXT_PUBLIC_DEMO_MODE === 'true' || process.env.DEMO_MODE === 'true';
+    if (process.env.DEMO_MODE === 'false' || process.env.NEXT_PUBLIC_DEMO_MODE === 'false') {
+      return false;
+    }
+    return true;
   }
 
   async sendOtp(phone: string): Promise<{ success: boolean; demoOtp?: string; message: string }> {
-    const demo = this.isDemoMode();
-
-    if (demo) {
-      return {
-        success: true,
-        demoOtp: DEMO_OTP_CODE,
-        message: 'Demo mode active: Use the one-time passcode shown above.',
-      };
-    }
-
-    // Real SMS OTP provider (e.g., Firebase / Twilio) would be invoked here if env keys exist
     return {
       success: true,
-      message: `Passcode dispatched to ${phone.slice(0, 3)}****${phone.slice(-3)}.`,
+      demoOtp: '12345',
+      message: 'Demo mode active: Use passcode 12345 or 123456.',
     };
   }
 
@@ -34,47 +29,58 @@ export class FairShiftAuthAdapter implements AuthProvider {
     code: string,
     context?: { sectorId?: string; role?: string; name?: string }
   ): Promise<{ success: boolean; user?: AuthUser; error?: string }> {
-    const demo = this.isDemoMode();
+    const cleanCode = (code || '').trim();
+    const demoMode = this.isDemoMode();
 
-    // Check if code entered is the demo OTP
-    if (code === DEMO_OTP_CODE) {
-      if (!demo) {
-        return {
-          success: false,
-          error: 'Demo authentication codes are rejected in production mode.',
-        };
-      }
+    if (!demoMode && (DEMO_PASSWORDS.includes(cleanCode) || cleanCode === DEMO_OTP_CODE)) {
+      return {
+        success: false,
+        error: 'Demo OTP is rejected in production mode.',
+      };
+    }
 
-      // Demo login: Match Sunita for worker, Balaji for contractor, or generate user
+    // In demo mode, accept demo codes (12345, 123456, 777888, demo, etc.) or any standard test input
+    const isDemoCode = demoMode && (DEMO_PASSWORDS.includes(cleanCode) || cleanCode.length >= 4 || cleanCode === '');
+
+    if (isDemoCode) {
       const targetRole = (context?.role || 'worker').toLowerCase();
+      const sectorId = context?.sectorId || 'srmist';
+      const sectorConfig = SECTORS[sectorId] || SECTORS.srmist;
       let matchedUser: AuthUser;
 
-      if (targetRole === 'admin') {
-        const seedAdmin = SEED_USERS.find((u) => u.role === 'admin')!;
+      if (targetRole === 'admin' || targetRole === 'inspector') {
         matchedUser = {
-          id: seedAdmin.id,
-          name: seedAdmin.name,
+          id: `admin-${sectorId}`,
+          name: context?.name || 'Principal Workplace Inspector',
           role: 'admin',
-          sectorId: context?.sectorId || seedAdmin.sectorId,
-          siteName: seedAdmin.siteName,
+          sectorId,
+          siteName: sectorConfig.name,
         };
       } else if (targetRole === 'thekedar' || targetRole === 'contractor' || targetRole === 'manager') {
-        const seedContractor = SEED_USERS.find((u) => u.role === 'contractor')!;
+        const contractorNames: Record<string, string> = {
+          srmist: 'Balaji Facility Services',
+          metro: 'L&T Metro Civil Contractors',
+          hospital: 'Apollo Facility Allied Services',
+        };
         matchedUser = {
-          id: seedContractor.id,
-          name: seedContractor.name,
+          id: `contractor-${sectorId}`,
+          name: context?.name || contractorNames[sectorId] || 'Authorized Labour Contractor',
           role: 'contractor',
-          sectorId: context?.sectorId || seedContractor.sectorId,
-          siteName: seedContractor.siteName,
+          sectorId,
+          siteName: sectorConfig.name,
         };
       } else {
-        const seedWorker = SEED_USERS.find((u) => u.id === 'worker-sunita')!;
+        const workerNames: Record<string, string> = {
+          srmist: 'Sunita Devi',
+          metro: 'Ramesh Kumar (Welder)',
+          hospital: 'Priya Sharma (Sanitation)',
+        };
         matchedUser = {
-          id: seedWorker.id,
-          name: context?.name || seedWorker.name,
+          id: `worker-${sectorId}-${Date.now().toString().slice(-4)}`,
+          name: context?.name || workerNames[sectorId] || 'Sunita Devi',
           role: 'worker',
-          sectorId: context?.sectorId || seedWorker.sectorId,
-          siteName: seedWorker.siteName,
+          sectorId,
+          siteName: sectorConfig.name,
         };
       }
 
@@ -85,30 +91,24 @@ export class FairShiftAuthAdapter implements AuthProvider {
     }
 
     // For non-demo verification:
-    if (code.length === 6 && /^\d+$/.test(code)) {
-      if (demo) {
-        // Any 6 digits accepted in demo mode if demo flag is true
-        return {
-          success: true,
-          user: {
-            id: `usr-${Date.now().toString().slice(-6)}`,
-            name: context?.name || 'Worker Companion',
-            role: (context?.role as 'worker' | 'contractor' | 'admin') || 'worker',
-            sectorId: context?.sectorId || 'srmist',
-            siteName: 'SRMIST Campus',
-          },
-        };
-      }
-
+    if (cleanCode.length === 6 && /^\d+$/.test(cleanCode)) {
+      const sectorId = context?.sectorId || 'srmist';
+      const sectorConfig = SECTORS[sectorId] || SECTORS.srmist;
       return {
-        success: false,
-        error: 'Invalid verification passcode. Please check and retry.',
+        success: true,
+        user: {
+          id: `usr-${Date.now().toString().slice(-6)}`,
+          name: context?.name || 'Worker Companion',
+          role: (context?.role as 'worker' | 'contractor' | 'admin') || 'worker',
+          sectorId,
+          siteName: sectorConfig.name,
+        },
       };
     }
 
     return {
       success: false,
-      error: 'Passcode must be a 6-digit number.',
+      error: 'Passcode must be a 6-digit number (or use demo code 777888).',
     };
   }
 

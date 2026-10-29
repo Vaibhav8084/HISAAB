@@ -36,10 +36,10 @@ export async function POST(request: NextRequest) {
         name,
       });
     } else if (type === 'admin') {
-      authResult = await authAdapter.verifyOtp('+91 90000 00001', '777888', {
-        sectorId: 'srmist',
+      authResult = await authAdapter.verifyOtp(phone || '+91 90000 00001', code || '777888', {
+        sectorId: sectorId || 'srmist',
         role: 'admin',
-        name: 'Workplace Inspector',
+        name: name || 'Principal Workplace Inspector',
       });
     } else {
       return NextResponse.json({ success: false, error: 'Unsupported authentication method' }, { status: 400 });
